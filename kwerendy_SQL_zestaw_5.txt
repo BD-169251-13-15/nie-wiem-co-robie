@@ -1,0 +1,19 @@
+1.
+CREATE TABLE kreatura SELECT * FROM wikingowie.kreatura;
+CREATE TABLE uczestnicy SELECT * FROM wikingowie.uczestnicy;
+CREATE TABLE etapy_wyprawy SELECT * FROM wikingowie.etapy_wyprawy;
+CREATE TABLE sektor SELECT * FROM wikingowie.sektor;
+CREATE TABLE wyprawa SELECT * FROM wikingowie.wyprawa;
+
+SELECT kreatura.nazwa,kreatura.idKreatury FROM kreatura LEFT JOIN wyprawa ON kreatura.idKreatury=wyprawa.kierownik WHERE wyprawa.kierownik IS NULL;
+SELECT nazwa, SUM(ilosc) AS "suma ekwipunku" FROM wyprawa LEFT JOIN uczestnicy ON wyprawa.id_wyprawy=uczestnicy.id_wyprawy INNER JOIN ekwipunek ON ekwipunek.idKreatury=uczestnicy.id_uczestnika GROUP BY nazwa;
+2.
+SELECT wyprawa.nazwa, COUNT(uczestnicy.id_uczestnika) AS "liczba uczestnikow", GROUP_CONCAT(kreatura.nazwa) AS "uczestnicy" FROM wyprawa INNER JOIN uczestnicy ON wyprawa.id_wyprawy=uczestnicy.id_wyprawy INNER JOIN kreatura ON uczestnicy.id_uczestnika=kreatura.idKreatury GROUP BY wyprawa.nazwa;
+SELECT idEtapu, sektor.nazwa, wyprawa.nazwa, kreatura.nazwa, kierownik FROM etapy_wyprawy INNER JOIN wyprawa ON etapy_wyprawy.idWyprawy=wyprawa.id_wyprawy INNER JOIN kreatura ON wyprawa.kierownik=kreatura.idKreatury INNER JOIN sektor ON etapy_wyprawy.sektor=sektor.id_sektora ORDER BY wyprawa.data_rozpoczecia, etapy_wyprawy.kolejnosc;
+3.
+SELECT sektor.nazwa, COUNT(idEtapu) FROM sektor LEFT JOIN etapy_wyprawy ON etapy_wyprawy.sektor=sektor.id_sektora GROUP BY sektor.nazwa;
+SELECT nazwa, IF(COUNT(uczestnicy.id_wyprawy)=0, "nie bral udzialu", "bral udzial") AS "obecnosc" FROM kreatura LEFT JOIN uczestnicy ON kreatura.idKreatury=uczestnicy.id_uczestnika GROUP BY nazwa;
+4.
+SELECT SUM(CHAR_LENGTH(dziennik)) ilosc_znakow, nazwa FROM etapy_wyprawy INNER JOIN wyprawa ON etapy_wyprawy.idWyprawy=wyprawa.id_wyprawy GROUP BY etapy_wyprawy.idWyprawy HAVING ilosc_znakow<400;
+ne umem dalej :C
+SELECT wyprawa.nazwa, AVG(zasob.waga*ekwipunek.ilosc) FROM wyprawa INNER JOIN uczestnicy ON wyprawa.id_wyprawy=uczestnicy.id_wyprawy INNER JOIN ekwipunek ON uczestnicy.id_uczestnika=ekwipunek.idKreatury INNER JOIN zasob ON ekwipunek.idZasobu=zasob.idZasobu;
